@@ -37,7 +37,7 @@ jobs:
         env:
           STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
-          keytool -list -keystore /tmp/signing.jks -storepass "$STORE_PASS"
+          keytool -list -keystore /tmp/signing.jks -storepass "RFAtvstation2026"
 
       - name: Zipalign APK
         run: |
