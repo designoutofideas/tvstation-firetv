@@ -28,38 +28,34 @@ jobs:
         run: gradle assembleRelease
 
       - name: Decode keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > /tmp/signing.jks
-          ls -la /tmp/signing.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > /tmp/signing.jks
 
-      - name: Verify keystore password
+      - name: Verify keystore
         run: |
           keytool -list \
             -keystore /tmp/signing.jks \
-            -storepass '${{ secrets.KEYSTORE_PASSWORD }}' \
-            -alias '${{ secrets.KEY_ALIAS }}'
+            -storepass ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Zipalign APK
         run: |
           ${ANDROID_SDK_ROOT}/build-tools/34.0.0/zipalign -v -p 4 \
-            tvstation-firetv/app/build/outputs/apk/release/app-release-unsigned.apk \
-            /tmp/app-release-aligned.apk
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            /tmp/app-aligned.apk
 
       - name: Sign APK
         run: |
           ${ANDROID_SDK_ROOT}/build-tools/34.0.0/apksigner sign \
             --ks /tmp/signing.jks \
-            --ks-key-alias '${{ secrets.KEY_ALIAS }}' \
-            --ks-pass 'pass:${{ secrets.KEYSTORE_PASSWORD }}' \
-            --key-pass 'pass:${{ secrets.KEY_PASSWORD }}' \
-            --out /tmp/app-release-signed.apk \
-            /tmp/app-release-aligned.apk
+            --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out /tmp/app-signed.apk \
+            /tmp/app-aligned.apk
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
           name: RFA-TVStation-release
-          path: /tmp/app-release-signed.apk
+          path: /tmp/app-signed.apk
           retention-days: 30
