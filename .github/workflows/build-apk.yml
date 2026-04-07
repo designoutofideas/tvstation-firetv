@@ -53,9 +53,9 @@ jobs:
         run: |
           ${ANDROID_SDK_ROOT}/build-tools/34.0.0/apksigner sign \
             --ks /tmp/signing.jks \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-pass "pass:$STORE_PASS" \
-            --key-pass "pass:$KEY_PASS" \
+            --ks-key-alias "rfatvstation" \
+            --ks-pass "pass:RFAtvstation2026" \
+            --key-pass "pass:RFAtvstation2026" \
             --out /tmp/app-signed.apk \
             /tmp/app-aligned.apk
 
